@@ -1,0 +1,267 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+main {
+    flex-grow: 1;
+    /* при выбрасывании основного контента (main {display: none;}) футер всегда будет уходить наверх!! не исправляется ни чем */
+}
+
+footer {
+    text-align: left;
+    padding: 7px;
+    background-color: #000;
+    color: #fff;
+    position: relative;
+    width: 100%;
+}
+
+header {
+    display: grid;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+}
+
+nav {
+    display: flex;
+    gap: 15px;
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+    font-size: 18px;
+}
+
+nav a.active {
+    color: tomato;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+h2 {
+    padding-left: 10px;
+}
+
+section>div>div {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 35px;
+    text-align: center;
+    position: relative;
+    border: 2px solid transparent;
+    filter: drop-shadow(17px 19px 24px rgba(0, 0, 0, 0.13));
+    cursor: pointer;
+    transition: border 0.3s, background-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+section>div>div img {
+    width: 100%;
+    border-radius: 35px;
+}
+
+section>div>div .price {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+section>div>div .name {
+    font-size: 18px;  
+    flex-grow: 1;
+}
+
+section>div>div .weight {
+    color: grey;
+    font-size: 16px;
+}
+
+section>div>div>button {
+    background-color: #f1eee9;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+    align-self: center;
+}
+
+section>div>div:hover {
+    border: 2px solid tomato;
+}
+
+section>div>div:hover>button {
+    background-color: rgb(181, 169, 169);
+}
+
+
+.container {
+    margin-bottom: 10px;
+}
+
+.orderform {
+    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.orderform > h2 {
+    text-align: center;
+}
+
+form {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 100px;
+    font-size: 20px;
+    font-weight: 400;
+    padding: 30px 40px 30px 40px;
+}
+
+h3 {
+    font-size: 25px;
+    font-style:normal;
+    font-weight: 500;
+}
+
+.client-order {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between;
+    gap: 10px;
+}
+
+.client-info {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between;
+    gap: 10px;
+}
+
+label {
+    margin: 0;
+}
+
+select {
+    padding: 5px;
+    margin: 0;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    width: 100%;
+    height: 100%;
+}
+
+.inputtext {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.inputtext > input{
+    padding: 5px;
+    margin: 5px;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    width: 100%;
+    height: 100%;
+}
+
+.agree-sales{
+    font-size: 18px;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.small-label {
+    font-size: 15px;
+    font-style:italic;
+    font-weight: 400;
+}
+
+fieldset {
+    padding: 0;
+    border-style: hidden;
+}
+
+.order-speed {
+    margin-bottom: 10px;
+}
+
+.order-speed > div {
+    font-size: 18px;
+    font-style: normal;
+    margin: 5px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.buttons > button{
+    flex: 1;
+    padding: 5px;
+    font-size: 15px;
+    font-style:normal;
+}
+
+/* Адаптивность для страницы Собрать ланч */
+@media (max-width: 800px) {
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    header, footer {
+        text-align: left;
+    }
+
+    nav {
+        justify-content: space-around;
+    }
+
+    h1, h2 {
+        text-align: left;
+    }
+}
+
+@media (max-width: 600px) {
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+ 
+    nav {
+        flex-direction: column; 
+        align-items: center;
+    }
+
+    nav a {
+        font-size: 22px;
+    }
+}
