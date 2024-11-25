@@ -1,121 +1,136 @@
 "use strict";
 "createArray.js";
 
-let order = {
-    selSoup: null,
-    selBase: null,
-    selDrink: null
+// Объект для хранения текущего выбора пользователя
+const currentOrder = {
+    soup: null,
+    base: null,
+    juice: null
 };
 
-//Функция подсчета конечной цены
-function finalPrice() {
-    const finalPrice = document.getElementById('final');
-    let final = 0;
+// Функция для расчета общей стоимости
+function calculateTotal() {
+    const totalElement = document.getElementById('total');
+    const total =
+    (currentOrder.soup ? currentOrder.soup.price : 0) +
+    (currentOrder.base ? currentOrder.base.price : 0) +
+    (currentOrder.juice ? currentOrder.juice.price : 0);
 
-    if (order.selSoup) { 
-        final += order.selSoup.price;
-    };
-    if (order.selBase) { 
-        final += order.selBase.price;
-    };
-    if (order.selDrink) { 
-        final += order.selDrink.price;
-    };
-    finalPrice.textContent = `${final}₽`;
-};
+    totalElement.textContent = total ? ` ${total} ₽` : ' 0 ₽'; // Обновляем текст общей стоимости
+}
 
-//Функция для отображения блюд в заказе
-function updateDisplay() {
-    const noSelection = document.getElementById('nothing');
-    const selectedOrder = document.getElementById('selectedOrder');
+// Функция для обновления информации о выбранном пункте
+function updateOrderDetails(category, dish) {
+    const selectElement = document.querySelector(`#${category}-select-no`);
+    const hiddenInput = document.querySelector(`#hidden${capitalize(category)}`);
 
-    if (order.selSoup || order.selDrink || order.selBase) {
-        noSelection.style.display = 'none';
-        selectedOrder.style.display = 'flex';
-        finalPrice();
-    } 
-    else {
-        noSelection.style.display = 'block';
-        selectedOrder.style.display = 'none';
+    if (dish) {
+        selectElement.textContent = `${dish.name} (${dish.count}) - ${dish.price} ₽`;
+        hiddenInput.value = dish.keyword;
+    } else {
+        selectElement.textContent = `${capitalize(category)} не выбран`;
+        hiddenInput.value = '';
     }
-};
+}
 
-// Функция для добавления блюда в заказ
-function selectDish(keyword) {
-    const selectedDish = arr.find(dish => dish.keyword === keyword);
+// Функция для отображения текущего заказа
+function renderOrder() {
+    const nothingSelected = document.querySelector('#nothing');
+    const orderDetails = document.querySelector('#selectedOrder');
 
-    if (selectedDish.category === 'soup') {
-        order.selSoup = selectedDish;
-        document.getElementById("soup-select-no").textContent = 
-        selectedDish.name + ' - ' + selectedDish.price + '₽';
-    } else if (selectedDish.category === 'base') {
-        order.selBase = selectedDish;
-        document.getElementById("base-select-no").textContent = 
-        selectedDish.name + ' - ' + selectedDish.price + '₽';
-    } else if (selectedDish.category === 'drink') {
-        order.selDrink = selectedDish;
-        document.getElementById("drink-select-no").textContent =
-         selectedDish.name + ' - ' + selectedDish.price + '₽';
+    if (currentOrder.soup || currentOrder.base || currentOrder.juice) {
+        nothingSelected.style.display = 'none';
+        orderDetails.style.display = 'block';
+
+        updateOrderDetails('soup', currentOrder.soup);
+        updateOrderDetails('base', currentOrder.base);
+        updateOrderDetails('juice', currentOrder.juice);
+        calculateTotal();
+
+    } else {
+        nothingSelected.style.display = 'block';
+        orderDetails.style.display = 'none';
+        calculateTotal();
     }
+}
 
-    updateDisplay();
-};
+// Функция для отображения блюд из массива данных
+function displayMenu() {
+    const categoryContainers = {
+        soup: document.querySelector('#soup-container'),
+        base: document.querySelector('#base-container'),
+        juice: document.querySelector('#juice-container')
+    };
 
-// Функция для отображения блюд
-function displayDishes() {
-    const sortedDishes = arr.sort((a, b) => a.name.localeCompare(b.name));
-    
-    const dishSections = document.querySelectorAll('.dishes');
-    
+    // Сортируем блюда в алфавитном порядке по имени
+    const sortedDishes = [...dishes].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+
     sortedDishes.forEach(dish => {
-        const dishCard = document.createElement('div');
-        dishCard.classList.add('dish-card');
-        dishCard.setAttribute('data-dish', dish.keyword);
-
-        dishCard.innerHTML = `
-            <img src='${dish.image}' alt='${dish.name}'>
-            <p class='price'>${dish.price} ₽</p>
-            <p class='name'>${dish.name}</p>
-            <p class='weight'>${dish.count}</p>
+        const card = document.createElement('div');
+        card.classList.add('menu-item');
+        card.innerHTML = `
+            <img src="${dish.image}" alt="${dish.name}">
+            <p class="price">${dish.price} ₽</p>
+            <p class="name">${dish.name}</p>
+            <p class="weight">${dish.count}</p>
             <button>Добавить</button>
         `;
 
-        if (dish.category === 'soup') { 
-            dishSections[0].append(dishCard);
-        } 
-        else if (dish.category === 'base') {
-            dishSections[1].append(dishCard);
-        } 
-        else if (dish.category === 'drink') {
-            dishSections[2].append(dishCard);
-        }
-       
-        dishCard.querySelector('button').onclick =
-         () => selectDish(dishCard.getAttribute('data-dish'));
-        
+        card.querySelector('button').onclick = () => chooseDish(dish);
+
+        categoryContainers[dish.category].appendChild(card);
     });
-};
+}
 
-document.addEventListener("DOMContentLoaded", displayDishes);
+// Функция для выбора блюда
+function chooseDish(dish) {
+    // Сохраняем выбор в текущем заказе
+    currentOrder[dish.category] = dish;
 
-document.getElementById('resetButton').onclick = function() {
-    order.selSoup = null;
-    order.selBase = null;
-    order.selDrink = null;
-    updateDisplay();
-};
+    // Убираем активность со всех карточек в категории
+    const categoryCards = document.querySelectorAll(`#${dish.category}-container .menu-item`);
+    categoryCards.forEach(card => card.classList.remove('active'));
 
-document.getElementById('submitButton').onclick = function(event) {
-    const soupValue = document.getElementById('hiddenSoup');
-    const mainValue = document.getElementById('hiddenMain');
-    const drinkValue = document.getElementById('hiddenDrink');
-    if (order.selSoup) {
-        soupValue.value = order.selSoup.keyword;
-    }
-    if (order.selBase) {
-        mainValue.value = order.selBase.keyword;
-    }
-    if (order.selDrink) {
-        drinkValue.value = order.selDrink.keyword;
-    }
-};
+    // Добавляем класс активности для выбранной карточки
+    const selectedCard = Array.from(categoryCards).find(card =>
+        card.querySelector('img').src.includes(dish.image)
+    );
+    if (selectedCard) selectedCard.classList.add('active');
+
+    // Обновляем отображение заказа
+    renderOrder();
+}
+
+// Функция для сброса выбора
+function resetOrder() {
+    // Очищаем объект текущего заказа
+    currentOrder.soup = null;
+    currentOrder.base = null;
+    currentOrder.juice = null;
+
+    // Убираем активность с карточек
+    document.querySelectorAll('.menu-item').forEach(card => card.classList.remove('active'));
+
+    // Обновляем отображение заказа
+    renderOrder();
+}
+
+// Функция для отправки заказа
+function submitOrder() {
+    // Скрытые поля уже обновляются в функции `updateOrderDetails`
+    alert('Ваш заказ отправлен!');
+}
+
+// Вспомогательная функция для капитализации строки
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Привязываем обработчики событий и отображаем меню
+document.addEventListener('DOMContentLoaded', () => {
+    displayMenu();
+    renderOrder();
+
+    document.querySelector('button[type="reset"]').onclick = resetOrder;
+    document.querySelector('button[type="submit"]').onclick = submitOrder;
+});
